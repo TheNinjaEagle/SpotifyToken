@@ -4,6 +4,9 @@ const axios = require('axios');
 const rateLimit = require('express-rate-limit'); // Add this line to import express-rate-limit
 const app = express();
 
+const qs = require('qs'); // require the 'qs' module
+
+
 app.use(express.json()); // This line is added to enable parsing of JSON bodies
 
 // Enable rate limiting
@@ -25,16 +28,18 @@ app.post('/v1/swap', async (req, res) => {
     try {
         console.log('Received token swap request with code: ', code); // Log incoming request
 
+        const bodyData = {
+            grant_type: 'authorization_code',
+            code: code,
+            redirect_uri: 'mood://spotify-login-callback', // the same redirect_uri you used in your app
+            client_id: process.env.SPOTIFY_CLIENT_ID,  // Accessing the environment variable
+            client_secret: process.env.SPOTIFY_CLIENT_SECRET // Accessing the environment variable
+        };
+
         const response = await axios({
             method: 'post',
             url: 'https://accounts.spotify.com/api/token',
-            data: {
-                grant_type: 'authorization_code',
-                code: code,
-                redirect_uri: 'mood://spotify-login-callback', // the same redirect_uri you used in your app
-                client_id: process.env.SPOTIFY_CLIENT_ID,  // Accessing the environment variable
-                client_secret: process.env.SPOTIFY_CLIENT_SECRET // Accessing the environment variable
-            },
+            data: qs.stringify(bodyData), // stringify the data as URL-encoded
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
