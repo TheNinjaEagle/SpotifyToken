@@ -1,6 +1,9 @@
+require('dotenv').config()
 const express = require('express');
 const axios = require('axios');
 const app = express();
+
+app.use(express.json()); // This line is added to enable parsing of JSON bodies
 
 // Token Swap Endpoint
 app.post('/v1/swap', async (req, res) => {
@@ -12,9 +15,9 @@ app.post('/v1/swap', async (req, res) => {
             data: {
                 grant_type: 'authorization_code',
                 code: code,
-                redirect_uri: 'your_redirect_uri', // the same redirect_uri you used in your app
-                client_id: 'your_spotify_client_id',
-                client_secret: 'your_spotify_client_secret'
+                redirect_uri: 'mood://spotify-login-callback', // the same redirect_uri you used in your app
+                client_id: process.env.SPOTIFY_CLIENT_ID,  // Accessing the environment variable
+                client_secret: process.env.SPOTIFY_CLIENT_SECRET // Accessing the environment variable
             },
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -38,8 +41,8 @@ app.post('/v1/refresh', async (req, res) => {
             data: {
                 grant_type: 'refresh_token',
                 refresh_token: refreshToken,
-                client_id: 'your_spotify_client_id',
-                client_secret: 'your_spotify_client_secret'
+                client_id: process.env.SPOTIFY_CLIENT_ID, // Accessing the environment variable
+                client_secret: process.env.SPOTIFY_CLIENT_SECRET // Accessing the environment variable
             },
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
