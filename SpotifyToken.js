@@ -21,6 +21,10 @@ app.use(limiter);
 // Token Swap Endpoint
 app.post('/v1/swap', async (req, res) => {
     const code = req.body.code;
+
+    // Debugging
+    console.log('Request Body: ', req.body);
+
     if (!code) {
         return res.status(400).json({ error: 'Missing code' });
     }
